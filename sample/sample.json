@@ -1,0 +1,296 @@
+{
+  "courseTitle": "DSA using C language",
+  "courseOverview": "In this course, you will learn about data structures and algorithms, implementing them using the C programming language. This course covers fundamental data structures and algorithmic techniques.",
+  "weeks": [
+    {
+      "weekNumber": 1,
+      "weekTitle": "Introduction to Data Structures and C Fundamentals",
+      "days": [
+        {
+          "day": 1,
+          "topic": "Introduction to Data Structures",
+          "description": "Overview of data structures, their importance, and classification (linear vs. non-linear, static vs. dynamic).",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=xLetJpcjHS0",
+          "status": "Will Do",
+          "quiz": {
+            "question": "Which of the following is NOT a data structure classification?",
+            "options": [
+              "Linear",
+              "Non-Linear",
+              "Static",
+              "Abstract"
+            ],
+            "correctOption": 3
+          }
+        },
+        {
+          "day": 2,
+          "topic": "C Fundamentals: Pointers",
+          "description": "Understanding pointers, pointer arithmetic, and their role in dynamic memory allocation.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=f2i0CnUOniA",
+          "status": "Will Do",
+          "quiz": {
+            "question": "What does a pointer variable store?",
+            "options": [
+              "A value",
+              "An address",
+              "A data type",
+              "A function"
+            ],
+            "correctOption": 1
+          }
+        },
+        {
+          "day": 3,
+          "topic": "C Fundamentals: Structures",
+          "description": "Defining and using structures in C, including nested structures.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=dqa0KMSMx2w",
+          "status": "Will Do",
+          "quiz": {
+            "question": "What is a structure in C?",
+            "options": [
+              "A function",
+              "A loop",
+              "A collection of different data types",
+              "A single variable"
+            ],
+            "correctOption": 2
+          }
+        },
+        {
+          "day": 4,
+          "topic": "Dynamic Memory Allocation in C",
+          "description": "Using malloc, calloc, realloc, and free functions for dynamic memory management.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=7RNesIP9Ot0",
+          "status": "Will Do",
+          "quiz": {
+            "question": "Which function is used to deallocate dynamically allocated memory?",
+            "options": [
+              "malloc()",
+              "calloc()",
+              "realloc()",
+              "free()"
+            ],
+            "correctOption": 3
+          }
+        },
+        {
+          "day": 5,
+          "topic": "Introduction to Arrays in C",
+          "description": "Declaring and using arrays (one-dimensional and multi-dimensional) in C.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=MOeGnamlUP4",
+          "status": "Will Do",
+          "quiz": {
+            "question": "Array indexes in C start from?",
+            "options": [
+              "1",
+              "-1",
+              "0",
+              "Any number"
+            ],
+            "correctOption": 2
+          }
+        }
+      ]
+    },
+    {
+      "weekNumber": 2,
+      "weekTitle": "Arrays, Linked Lists and Stacks",
+      "days": [
+        {
+          "day": 1,
+          "topic": "Arrays: Operations and Applications",
+          "description": "Array operations: insertion, deletion, searching, and sorting.  Applications of arrays.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=p5TDnxAYAZY",
+          "status": "Will Do",
+          "quiz": {
+            "question": "Which operation is typically the slowest in an unsorted array?",
+            "options": [
+              "Insertion",
+              "Deletion",
+              "Searching",
+              "Accessing an element by index"
+            ],
+            "correctOption": 2
+          }
+        },
+        {
+          "day": 2,
+          "topic": "Introduction to Linked Lists",
+          "description": "Understanding linked lists, their advantages, and disadvantages compared to arrays.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=R9PTBwOzceo",
+          "status": "Will Do",
+          "quiz": {
+            "question": "What is a key advantage of linked lists over arrays?",
+            "options": [
+              "Random access",
+              "Fixed size",
+              "Dynamic size",
+              "Faster searching"
+            ],
+            "correctOption": 2
+          }
+        },
+        {
+          "day": 3,
+          "topic": "Singly Linked Lists",
+          "description": "Implementing singly linked lists: insertion, deletion, traversal.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=58YbpRDc4yw",
+          "status": "Will Do",
+          "quiz": {
+            "question": "What is the topmost node in a tree called?",
+            "options": [
+              "Child",
+              "Parent",
+              "Root",
+              "Leaf"
+            ],
+            "correctOption": 2
+          }
+        },
+        {
+          "day": 3,
+          "topic": "Introduction to Trees",
+          "description": "Understanding tree data structures, terminology (root, node, child, parent, leaf), and different types of trees.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=qH6yxkw0u78",
+          "status": "Will Do",
+          "quiz": {
+            "question": "What is the topmost node in a tree called?",
+            "options": [
+              "Child",
+              "Parent",
+              "Root",
+              "Leaf"
+            ],
+            "correctOption": 2
+          }
+        },
+        {
+          "day": 4,
+          "topic": "Binary Trees",
+          "description": "Understanding binary trees and their properties.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=-DzowlcaUmE",
+          "status": "Will Do",
+          "quiz": {
+            "question": "What is the maximum number of children a node in a binary tree can have?",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "Unlimited"
+            ],
+            "correctOption": 1
+          }
+        },
+        {
+          "day": 5,
+          "topic": "Basic Sorting Algorithms: Bubble Sort",
+          "description": "Implementing the bubble sort algorithm in C.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=o4bAoo_gFBU",
+          "status": "Will Do",
+          "quiz": {
+            "question": "What is the time complexity of Bubble Sort in the worst-case scenario?",
+            "options": [
+              "O(n)",
+              "O(log n)",
+              "O(n^2)",
+              "O(n log n)"
+            ],
+            "correctOption": 2
+          }
+        }
+      ]
+    },
+    {
+      "weekNumber": 4,
+      "weekTitle": "More Sorting and Searching, and Introduction to Graphs",
+      "days": [
+        {
+          "day": 1,
+          "topic": "Selection Sort",
+          "description": "Implementing the selection sort algorithm in C.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=9oWd4VJOwr0",
+          "status": "Will Do",
+          "quiz": {
+            "question": "What is the main operation in selection sort?",
+            "options": [
+              "Swapping",
+              "Comparison",
+              "Recursion",
+              "Merging"
+            ],
+            "correctOption": 1
+          }
+        },
+        {
+          "day": 2,
+          "topic": "Insertion Sort",
+          "description": "Implementing the insertion sort algorithm in C.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=yCxV0kBpA6M",
+          "status": "Will Do",
+          "quiz": {
+            "question": "In Insertion Sort, when is the best-case time complexity achieved?",
+            "options": [
+              "When the input is randomly ordered",
+              "When the input is sorted",
+              "When the input is reverse sorted",
+              "It's always O(n^2)"
+            ],
+            "correctOption": 1
+          }
+        },
+        {
+          "day": 3,
+          "topic": "Searching Algorithms: Linear Search",
+          "description": "Implementing linear search in C.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=C46QfTjVCNU",
+          "status": "Will Do",
+          "quiz": {
+            "question": "What is the time complexity of Linear Search in the worst case?",
+            "options": [
+              "O(1)",
+              "O(log n)",
+              "O(n)",
+              "O(n^2)"
+            ],
+            "correctOption": 2
+          }
+        },
+        {
+          "day": 4,
+          "topic": "Searching Algorithms: Binary Search",
+          "description": "Implementing binary search in C. Requires a sorted array.",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=V_T5NuccwRA",
+          "status": "Will Do",
+          "quiz": {
+            "question": "Binary Search works efficiently on which data structure?",
+            "options": [
+              "Unsorted Array",
+              "Sorted Array",
+              "Linked List",
+              "Hash Table"
+            ],
+            "correctOption": 1
+          }
+        },
+        {
+          "day": 5,
+          "topic": "Introduction to Graphs",
+          "description": "Introduction to graph data structures, terminology (vertices, edges), and types of graphs (directed, undirected).",
+          "supplementaryVideo": "https://www.youtube.com/watch?v=RxT3XE-seUo",
+          "status": "Will Do",
+          "quiz": {
+            "question": "What are the connecting lines between vertices in a graph called?",
+            "options": [
+              "Nodes",
+              "Edges",
+              "Branches",
+              "Leaves"
+            ],
+            "correctOption": 1
+          }
+        }
+      ]
+    }
+  ]
+}
