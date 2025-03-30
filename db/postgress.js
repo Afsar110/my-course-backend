@@ -32,6 +32,7 @@ function loadModels() {
       const model = modelFactory(sequelize);
       models[model.name] = model;
     });
+    console.log(models)
 
   Object.keys(models).forEach(modelName => {
     if (typeof models[modelName].associate === 'function') {
@@ -53,13 +54,17 @@ async function connectToPostgres() {
     sequelize.models = models;
     
     // Optionally, if you need to sync your models:
-    await sequelize.sync( process.env.NODE_ENV=== 'development' ? {force: true} :  {alter:false}  ); // or { force: true } in development
+    await sequelize.sync( process.env.NODE_ENV=== 'development' ? {force: false} :  {alter:false}  ); // or { force: true } in development
 
   } catch (error) {
     console.error('Unable to connect to the Postgres database:', error);
   }
 }
 
-connectToPostgres();
+// (async () => {
+   connectToPostgres();
+  // Initialize your server or application after database connection
+// })();
+
 
 module.exports = sequelize;

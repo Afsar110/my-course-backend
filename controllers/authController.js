@@ -1,10 +1,16 @@
 // controllers/authController.js
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User.model'); // ensure the path is correct
+const { userTypeEnum } = require('../utils/constant');
+const sequelize = require('../db/postgress');
+
 require('dotenv').config();
 
+// const { User } = sequelize.models;
+
 const register = async (req, res) => {
+
+  const { User } = sequelize.models;
   try {
     const { firstName, lastName, email, password } = req.body;
     // Check if user already exists
@@ -20,7 +26,7 @@ const register = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
-      role: 'user',
+      role: userTypeEnum.USER,
     });
     res.status(201).json({
       message: 'User registered successfully',
@@ -34,6 +40,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
+    const { User } = sequelize.models;
     const { email, password } = req.body;
     // Find user by email
     const user = await User.findOne({ where: { email } });
@@ -47,7 +54,8 @@ const login = async (req, res) => {
     }
     // Create JWT payload
     const payload = { id: user.id, email: user.email, role: user.role };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    let token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+    token = `Bearer ${token}`
     res.json({ token });
   } catch (error) {
     console.error('Login error:', error);

@@ -1,7 +1,9 @@
-const express = require('express');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-require('dotenv').config();
 const sequelize = require('./db/postgress');
+const express = require('express');
+require('dotenv').config();
+const routes = require('./routes/index');
+const authenticate = require('./middleware/authMiddleware');
+
 
 const PORT = process.env.PORT || 3000;
 
@@ -11,16 +13,9 @@ const app = express();
 app.use(express.json());
 
 
-// --- Routes ---
-const videoRoutes = require('./routes/videoRoutes');
-const aiRoutes = require('./routes/aiRoutes');
-const courseRoute = require('./routes/courseRoute');
-const authenticate = require('./middleware/authMiddleware');
+// --- Route ---
+app.use('/api', routes);
 
-// Use the routes
-app.use('/api', videoRoutes);
-app.use('/api', aiRoutes); 
-app.use('/api', courseRoute); 
 // Example of a protected route
 app.get('/api/protected', authenticate, (req, res) => {
   res.json({ message: 'You are authorized!', user: req.user });
