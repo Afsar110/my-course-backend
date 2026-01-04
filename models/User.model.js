@@ -42,5 +42,5 @@ module.exports = (sequelize) => {
     }
   );
 
-  return User;
+  return User; // Ensure the model is returned for proper initialization
 };
