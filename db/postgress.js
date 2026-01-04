@@ -1,65 +1,37 @@
-const { Sequelize } = require('sequelize');
+const { Sequelize } = require("sequelize");
+require("dotenv").config();
 
-const fs = require('fs');
-const path = require('path');
-require('dotenv').config();
+// Support both POSTGRES_* and DB_* env var naming conventions and provide sensible defaults
+const DB_NAME = process.env.DB_NAME || process.env.POSTGRES_DB || 'studyhour';
+const DB_USER = process.env.DB_USER || process.env.POSTGRES_USER || 'postgres';
+const DB_PASSWORD = process.env.DB_PASSWORD || process.env.POSTGRES_PASSWORD || 'postgres';
+const DB_HOST = process.env.DB_HOST || process.env.POSTGRES_HOST || 'localhost';
+const DB_PORT = process.env.DB_PORT || process.env.POSTGRES_PORT || 5432;
 
-const sequelize = new Sequelize(
-  process.env.POSTGRES_DB,
-  process.env.POSTGRES_USER,
-  process.env.POSTGRES_PASSWORD,
-  {
-    host: process.env.POSTGRES_HOST,
-    port: process.env.POSTGRES_PORT,
-    dialect: 'postgres',
-    logging: false,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
-  }
-);
+console.log(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT);
 
-function loadModels() {
-  const models = {};
-  const modelsDir = path.join(__dirname, '../models');
-  fs.readdirSync(modelsDir)
-    .filter(file => file.endsWith('.model.js'))
-    .forEach(file => {
-      const modelFactory = require(path.join(modelsDir, file));
-      const model = modelFactory(sequelize);
-      models[model.name] = model;
-    });
-
-  Object.keys(models).forEach(modelName => {
-    if (typeof models[modelName].associate === 'function') {
-      models[modelName].associate(models);
+const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
+  host: DB_HOST,
+  port: DB_PORT,
+  dialect: 'postgres',
+  logging: false,
+  // Only enable ssl when explicitly configured (useful for production)
+  dialectOptions: process.env.POSTGRES_SSL === 'true' || process.env.DB_SSL === 'true' ? {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
     }
-  });
+  } : {},
+});
 
-  return models;
-}
-
-
-async function connectToPostgres() {
+const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log('Connection to Postgres has been established successfully.');
-
-    // Load all models and attach them to the sequelize instance
-    const models = loadModels();
-    sequelize.models = models;
-    
-    // Optionally, if you need to sync your models:
-    await sequelize.sync( process.env.NODE_ENV=== 'development' ? {force: true} :  {alter:false}  ); // or { force: true } in development
-
+    console.log("✅ Postgres connected successfully");
   } catch (error) {
-    console.error('Unable to connect to the Postgres database:', error);
+    console.error("❌ Unable to connect to the Postgres database:", error);
+    throw error;
   }
-}
+};
 
-connectToPostgres();
-
-module.exports = sequelize;
+module.exports = { sequelize, connectDB };

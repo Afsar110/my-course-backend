@@ -1,56 +1,80 @@
-const express = require('express');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-require('dotenv').config();
-const sequelize = require('./db/postgress');
+require("dotenv").config();
 
-const PORT = process.env.PORT || 3000;
+const cors = require("cors");
+const express = require("express");
+const { connectDB } = require("./db/postgress");
+const { sequelize } = require('./models');
+const videoRoutes = require("./routes/videoRoutes");
+const aiRoutes = require("./routes/aiRoutes");
+const courseRoute = require("./routes/courseRoute");
+const authRoutes = require("./routes/authRoutes");
+const authenticate = require("./middleware/authMiddleware");
+const vectorDBService = require("./db/vectorDB");
 
-
-// Initialize Express app
 const app = express();
+const PORT = process.env.PORT || 5000;
+
+const ALLOWED_DOMAINS = process.env.ALLOWED_DOMAINS || "*";
+// Middleware
+app.use(cors({
+  origin: ALLOWED_DOMAINS.split(","),
+  credentials: true,
+}));
+
 app.use(express.json());
 
+sequelize.sync({ alter: true })
+  .then(() => console.log("✅ Models synced with database"))
+  .catch((err) => console.error("❌ Model sync failed:", err));
 
-// --- Routes ---
-const videoRoutes = require('./routes/videoRoutes');
-const aiRoutes = require('./routes/aiRoutes');
-const courseRoute = require('./routes/courseRoute');
-const authenticate = require('./middleware/authMiddleware');
 
-// Use the routes
-app.use('/api', videoRoutes);
-app.use('/api', aiRoutes); 
-app.use('/api', courseRoute); 
-// Example of a protected route
-app.get('/api/protected', authenticate, (req, res) => {
-  res.json({ message: 'You are authorized!', user: req.user });
+
+
+
+
+// Routes
+app.use("/api", videoRoutes);
+app.use("/api", aiRoutes);
+app.use("/api", courseRoute);
+app.use("/api/auth", authRoutes);
+
+// Health check for vector DB
+app.get("/api/vector-db-status", (req, res) => {
+  res.json({ enabled: vectorDBService.enabled });
 });
 
-
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
+// Protected route example
+app.get("/api/protected", authenticate, (req, res) => {
+  res.json({
+    message: "You are authorized!",
+    user: req.user,
+  });
 });
 
+// Root route
+app.get("/", (req, res) => {
+  res.send("🚀 StudyHour Backend is running");
+});
 
-// --- Error Handling Middleware ---
+// Global error handler
 app.use((err, req, res, next) => {
-  console.error('Global Error Handler:', err);
-  res.status(500).json({ error: 'Internal Server Error' });
+  console.error("Global Error:", err);
+  res.status(500).json({ error: "Internal Server Error" });
 });
 
-async function startServer() {
+// Start server + DB
+(async () => {
   try {
-    // Authenticate and optionally sync your models
-    await sequelize.authenticate();
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('Unable to connect to the Postgres database:', error);
-    process.exit(1);
+    await connectDB();
+    console.log("✅ Connected to Postgres successfully");
+  } catch (err) {
+    console.warn("⚠️ DB connection failed. Starting in degraded mode.");
+    console.warn(err.message);
   }
-}
 
-startServer();
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+})();
 
 module.exports = app;

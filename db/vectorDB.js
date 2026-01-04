@@ -6,27 +6,30 @@ require('dotenv').config();
 
 class VectorDatabaseService {
   constructor() {
-    // Validate required environment variables
-    this.validateEnvironmentVariables();
+    // Validate required environment variables; enable vector DB only when configured
+    this.enabled = true;
+    const missing = this.validateEnvironmentVariables();
+    if (missing.length > 0) {
+      console.warn(`VectorDB disabled. Missing env vars: ${missing.join(', ')}`);
+      this.enabled = false;
+      this.config = {};
+      this.pc = null;
+      this.genAI = null;
+      return;
+    }
 
     // Initialize configuration
     this.config = {
       apiKey: process.env.PINECONE_API_KEY,
-      // environment: process.env.PINECONE_ENVIRONMENT,
       indexName: process.env.PINECONE_INDEX
     };
 
-    // Initialize Pinecone client
-  //   this.pc = new Pinecone({ 
-  //     apiKey:  process.env.PINECONE_API_KEY,
-  //     controllerHostUrl:  process.env.PINECONE_LOCALHOST_URL || 'http://localhost:5081' 
-  // });
+    // Initialize Pinecone client (controllerHostUrl may be provided via env)
+    this.pc = new Pinecone({
+      apiKey: process.env.PINECONE_API_KEY,
+      controllerHostUrl: process.env.PINECONE_LOCALHOST_URL || 'http://localhost:5081'
+    });
 
-  this.pc = new Pinecone({
-    apiKey:  process.env.PINECONE_API_KEY,
-    controllerHostUrl: 'http://localhost:5081'
-  });
-  
     // Initialize Google Generative AI
     this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   }
@@ -41,12 +44,8 @@ class VectorDatabaseService {
       'PINECONE_INDEX', 
       'GEMINI_API_KEY'
     ];
-
-    requiredVars.forEach(varName => {
-      if (!process.env[varName]) {
-        throw new Error(`Missing required environment variable: ${varName}`);
-      }
-    });
+    const missing = requiredVars.filter(v => !process.env[v]);
+    return missing; // caller will decide how to handle
   }
 
   /**
@@ -55,8 +54,12 @@ class VectorDatabaseService {
    * @returns {Promise<number[]>} Embedding vector
    */
   async generateEmbedding(text) {
+    if (!this.enabled || !this.genAI) {
+      console.warn('generateEmbedding called but VectorDB is disabled. Returning empty embedding.');
+      return [];
+    }
+
     const model = this.genAI.getGenerativeModel({ model: 'embedding-001' });
-    
     try {
       const result = await model.embedContent(text);
       return result.embedding.values;
@@ -73,6 +76,10 @@ class VectorDatabaseService {
   async getIndex() {
     const indexName = this.config.indexName;
     
+    if (!this.enabled || !this.pc) {
+      throw new Error('VectorDB is not enabled or Pinecone client not initialized');
+    }
+
     try {
       // List existing indexes
       const indexes = await this.pc.listIndexes();
@@ -118,8 +125,12 @@ class VectorDatabaseService {
    * @param {Object} embedding - Embedding to upsert
    */
   async upsertEmbedding(namespace, embedding) {
+    if (!this.enabled) {
+      console.warn('upsertEmbedding called but VectorDB is disabled. Skipping.');
+      return;
+    }
+
     const index = await this.getIndex();
-    
     try {
       await index.namespace(namespace).upsert([embedding]);
       console.log(`Embedding upserted in namespace: ${namespace}`);
@@ -137,8 +148,12 @@ class VectorDatabaseService {
    * @returns {Promise<Object[]>} Matched embeddings
    */
   async querySimilarEmbeddings(namespace, queryVector, topK = 3) {
+    if (!this.enabled) {
+      console.warn('querySimilarEmbeddings called but VectorDB is disabled. Returning empty list.');
+      return [];
+    }
+
     const index = await this.getIndex();
-    
     try {
       const queryResponse = await index.namespace(namespace).query({
         topK,
@@ -159,8 +174,12 @@ class VectorDatabaseService {
    */
   async storeCourse(courseData) {
     const courseText = `${courseData.title} ${courseData.overview}`;
-    const embedding = await this.generateEmbedding(courseText);
+    if (!this.enabled) {
+      console.warn('storeCourse called but VectorDB is disabled. Skipping.');
+      return;
+    }
 
+    const embedding = await this.generateEmbedding(courseText);
     const courseEmbedding = {
       id: `course:${Date.now()}`,
       values: embedding,
@@ -182,11 +201,14 @@ class VectorDatabaseService {
    */
   async findSimilarCourse(courseTitle, courseOverview) {
     const courseText = `${courseTitle} ${courseOverview}`;
-    const embedding = await this.generateEmbedding(courseText);
+    if (!this.enabled) {
+      console.warn('findSimilarCourse called but VectorDB is disabled. Returning null.');
+      return null;
+    }
 
+    const embedding = await this.generateEmbedding(courseText);
     const similarCourses = await this.querySimilarEmbeddings('courses', embedding);
 
-    // Check if a similar course exists (you can adjust the threshold)
     if (similarCourses.length > 0 && similarCourses[0].score > 0.8) {
       return similarCourses[0].metadata;
     }
@@ -200,8 +222,12 @@ class VectorDatabaseService {
    */
   async storeVideo(videoData) {
     const videoText = `${videoData.topic} ${videoData.description}`;
-    const embedding = await this.generateEmbedding(videoText);
+    if (!this.enabled) {
+      console.warn('storeVideo called but VectorDB is disabled. Skipping.');
+      return;
+    }
 
+    const embedding = await this.generateEmbedding(videoText);
     const videoEmbedding = {
       id: videoData?.videoId || `video:${Date.now()}`,
       values: embedding,
@@ -223,11 +249,14 @@ class VectorDatabaseService {
    */
   async findSimilarVideo(topic, description) {
     const videoText = `${topic} ${description}`;
-    const embedding = await this.generateEmbedding(videoText);
+    if (!this.enabled) {
+      console.warn('findSimilarVideo called but VectorDB is disabled. Returning null.');
+      return null;
+    }
 
+    const embedding = await this.generateEmbedding(videoText);
     const similarVideos = await this.querySimilarEmbeddings('videos', embedding);
 
-    // Check if a similar video exists (you can adjust the threshold)
     if (similarVideos.length > 0 && similarVideos[0].score > 0.8) {
       return similarVideos[0].metadata;
     }

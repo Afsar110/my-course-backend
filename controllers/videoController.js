@@ -5,14 +5,14 @@ require('dotenv').config();
 
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const  GEMENI_MODEL_FOR_VIDEO = process.env.GEMENI_MODEL_FOR_VIDEO;
- 
+const GEMINI_MODEL_FOR_VIDEO = process.env.GEMINI_MODEL_FOR_VIDEO;
+
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 // Function to search YouTube videos
 async function searchYouTubeVideos(topic) {
-console.log('Calling Youtube API with ',topic);
+  console.log('Calling Youtube API with ', topic);
 
   try {
     const response = await axios.get('https://www.googleapis.com/youtube/v3/search', {
@@ -30,10 +30,10 @@ console.log('Calling Youtube API with ',topic);
     // for (const video of videos) {
     //   await vectorDB.storeVideo(video);
     // }
-    
+
     console.log('Adding 500 millisecond delay.');
     await new Promise((resolve) => setTimeout(resolve, 500));
-    
+
     return videos;
 
   } catch (error) {
@@ -76,7 +76,7 @@ function extractVideoDetails(youtubeResponse) {
 
 // Function to analyze semantic similarity using Gemini AI
 async function analyzeSimilarity(userTopic, userDescription, videos) {
-  const model = genAI.getGenerativeModel({ model: GEMENI_MODEL_FOR_VIDEO });
+  const model = genAI.getGenerativeModel({ model: GEMINI_MODEL_FOR_VIDEO });
 
   // Create the prompt for Gemini
   const prompt = `
@@ -176,47 +176,47 @@ const findMatchingVideo = async (req, res) => {
 };
 
 const getPerfectVideoLink = async (topic, description) => {
-    try {
-
-  
-      if (!topic) {
-        throw new Error('Topic is required');
-      }
-  
-      // const similarVideo = await vectorDB.findSimilarVideo(topic, description);
-      // if (similarVideo) {
-      //   return similarVideo.youtubeLink;
-      // }
-      // Search YouTube for videos related to the topic
-      const videos = await searchYouTubeVideos(topic);
-  
-      if (videos.length === 0) {
-        throw new Error('No videos found for the given topic');
-        }
-  
-    
-  
-      // Analyze videos for semantic similarity
-      const analysis = await analyzeSimilarity(topic, description || '', videos);
-  
-      // Get the best match
-      const bestVideoIndex = analysis.bestMatch;
-      const bestVideo = videos[bestVideoIndex];
-  
-      // Return the best matching video
-      return bestVideo.youtubeLink;
-    } catch (error) {
-      console.error('Error in findMatchingVideo controller:', error);
-      throw error;
-      // return res.status(500).json({ error: error.message });
-    }
-  };
-  
-// Controller function to test extract video details
-const testExtract = async(req, res) => {
   try {
 
-    const {topic} = req.body;
+
+    if (!topic) {
+      throw new Error('Topic is required');
+    }
+
+    // const similarVideo = await vectorDB.findSimilarVideo(topic, description);
+    // if (similarVideo) {
+    //   return similarVideo.youtubeLink;
+    // }
+    // Search YouTube for videos related to the topic
+    const videos = await searchYouTubeVideos(topic);
+
+    if (videos.length === 0) {
+      throw new Error('No videos found for the given topic');
+    }
+
+
+
+    // Analyze videos for semantic similarity
+    const analysis = await analyzeSimilarity(topic, description || '', videos);
+
+    // Get the best match
+    const bestVideoIndex = analysis.bestMatch;
+    const bestVideo = videos[bestVideoIndex];
+
+    // Return the best matching video
+    return bestVideo.youtubeLink;
+  } catch (error) {
+    console.error('Error in findMatchingVideo controller:', error);
+    throw error;
+    // return res.status(500).json({ error: error.message });
+  }
+};
+
+// Controller function to test extract video details
+const testExtract = async (req, res) => {
+  try {
+
+    const { topic } = req.body;
     const videos = await searchYouTubeVideos(topic);
 
     return res.json(videos);

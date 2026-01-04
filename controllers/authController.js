@@ -1,7 +1,8 @@
 // controllers/authController.js
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User.model'); // ensure the path is correct
+const { User } = require('../models');
+const { userTypeEnum } = require('../utils/constant');
 require('dotenv').config();
 
 const register = async (req, res) => {
@@ -20,7 +21,7 @@ const register = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
-      role: 'user',
+      role: userTypeEnum.USER,
     });
     res.status(201).json({
       message: 'User registered successfully',
